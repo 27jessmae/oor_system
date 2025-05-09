@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin - Payment Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'admin_dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_orders' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="{% url 'admin_reservations' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-calendar-alt me-2"></i> Reservations
+                    </a>
+                    <a href="{% url 'admin_items' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-coffee me-2"></i> Items
+                    </a>
+                    <a href="{% url 'admin_customers' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Customers
+                    </a>
+                    <a href="{% url 'admin_payments' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-money-bill-wave me-2"></i> Payments
+                    </a>
+                    <a href="{% url 'home' %}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Exit Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Payment Details</h6>
+                    <a href="{% url 'admin_payments' %}" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Payments
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Payment Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Payment ID:</th>
+                                    <td>{{ payment.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Amount:</th>
+                                    <td>${{ payment.amount }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Payment Date:</th>
+                                    <td>{{ payment.payment_date|date:"F d, Y" }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Order Information</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Order ID:</th>
+                                    <td>{{ payment.order.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Customer:</th>
+                                    <td>
+                                        <a href="{% url 'admin_customer_detail' payment.order.customer.id %}">
+                                            {{ payment.order.customer.username }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Item:</th>
+                                    <td>{{ payment.order.item.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Quantity:</th>
+                                    <td>{{ payment.order.quantity }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Order Date:</th>
+                                    <td>{{ payment.order.order_date|date:"F d, Y" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        {% if payment.order.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif payment.order.status == 'confirmed' %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                        {% elif payment.order.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

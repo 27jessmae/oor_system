@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reserve a Table - SS Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Reserve a Table</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'table_reservation_form' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="table" class="form-label">Select a Table</label>
+                            <select class="form-select" id="table" name="table" required>
+                                <option value="" selected disabled>Choose a table...</option>
+                                {% for table in tables %}
+                                    <option value="{{ table.id }}">Table #{{ table.table_number }} (Capacity: {{ table.capacity }} guests)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="number_of_guests" class="form-label">Number of Guests</label>
+                            <input type="number" class="form-control" id="number_of_guests" name="number_of_guests" min="1" max="20" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reservation_date" class="form-label">Reservation Date</label>
+                            <input type="date" class="form-control" id="reservation_date" name="reservation_date" 
+                                   min="{{ min_date }}" max="{{ max_date }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="reservation_time" class="form-label">Reservation Time</label>
+                            <input type="time" class="form-control" id="reservation_time" name="reservation_time" 
+                                   min="08:00" max="20:00" required>
+                            <small class="text-muted">Our operating hours are from 8:00 AM to 8:00 PM</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="special_requests" class="form-label">Special Requests (Optional)</label>
+                            <textarea class="form-control" id="special_requests" name="special_requests" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Reserve Table</button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        * Table reservations are subject to availability and confirmation.<br>
+                        * Reservations can be made up to 30 days in advance.<br>
+                        * Please arrive 15 minutes before your reservation time.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('reservation_date').value = today;
+        
+        // Set default time to current time (rounded to nearest half hour)
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes() >= 30 ? 30 : 0;
+        
+        // Format time as HH:MM
+        const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        document.getElementById('reservation_time').value = timeString;
+        
+        // Validate guest count against table capacity
+        const tableSelect = document.getElementById('table');
+        const guestInput = document.getElementById('number_of_guests');
+        
+        tableSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                const capacity = parseInt(selectedOption.text.match(/Capacity: (\d+)/)[1]);
+                guestInput.max = capacity;
+                guestInput.setAttribute('placeholder', `Max ${capacity} guests`);
+            }
+        });
+    });
+</script>
+{% endblock %}

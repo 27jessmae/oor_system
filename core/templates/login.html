@@ -1,0 +1,22 @@
+{# core/templates/login.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SS Coffee – Login</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  {% include 'navbar.html' %}
+  <div class="container auth-form">
+    <h1>Login</h1>
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn register-btn">Log In</button>
+    </form>
+    <p>New here? <a href="{% url 'register' %}">Register</a></p>
+  </div>
+</body>
+</html>

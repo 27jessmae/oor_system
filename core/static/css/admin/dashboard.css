@@ -1,0 +1,386 @@
+/* Admin Dashboard CSS - SS Coffee */
+
+:root {
+  --primary-color: #5a3921;
+  --primary-light: #8c6d4f;
+  --primary-dark: #3e2816;
+  --secondary-color: #4CAF50;
+  --secondary-light: #80e27e;
+  --secondary-dark: #087f23;
+  --text-dark: #333333;
+  --text-light: #ffffff;
+  --background-light: #f8f9fa;
+  --background-card: #ffffff;
+  --border-color: #e0e0e0;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+}
+
+/* Base Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+.container-fluid {
+  padding: 0 20px;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  background-color: var(--background-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+  font-weight: 600;
+  background-color: var(--background-card);
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.card-header.bg-dark {
+  background-color: var(--primary-color) !important;
+  color: var(--text-light);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* Sidebar Menu */
+.list-group-item {
+  border: none;
+  padding: 12px 20px;
+  margin-bottom: 5px;
+  border-radius: 5px !important;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: rgba(90, 57, 33, 0.1);
+}
+
+.list-group-item.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.list-group-item.active:hover {
+  background-color: var(--primary-dark);
+}
+
+.list-group-item i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.list-group-item.text-danger {
+  color: var(--danger-color) !important;
+}
+
+.list-group-item.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Stat Cards */
+.border-left-primary {
+  border-left: 4px solid var(--primary-color);
+}
+
+.border-left-success {
+  border-left: 4px solid var(--secondary-color);
+}
+
+.border-left-info {
+  border-left: 4px solid var(--info-color);
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-success {
+  color: var(--secondary-color) !important;
+}
+
+.text-info {
+  color: var(--info-color) !important;
+}
+
+.font-weight-bold {
+  font-weight: 600 !important;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+  vertical-align: middle;
+}
+
+.table th {
+  padding: 12px 15px;
+  border-top: none;
+  border-bottom: 2px solid var(--border-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 15px;
+  vertical-align: middle;
+  border-top: 1px solid var(--border-color);
+}
+
+.table-bordered {
+  border: 1px solid var(--border-color);
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid var(--border-color);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Badges */
+.badge {
+  padding: 6px 10px;
+  font-weight: 500;
+  border-radius: 30px;
+}
+
+.bg-warning {
+  background-color: var(--warning-color) !important;
+  color: #212529;
+}
+
+.bg-success {
+  background-color: var(--secondary-color) !important;
+}
+
+.bg-danger {
+  background-color: var(--danger-color) !important;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-success {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-success:hover {
+  background-color: var(--secondary-dark);
+  border-color: var(--secondary-dark);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 0.875rem;
+}
+
+/* Forms */
+.form-control {
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  height: auto;
+}
+
+.form-control:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 0.2rem rgba(90, 57, 33, 0.25);
+}
+
+.form-select {
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  height: auto;
+}
+
+.form-select:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 0.2rem rgba(90, 57, 33, 0.25);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+  border-radius: 0.25rem;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: var(--primary-color);
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+}
+
+.page-link:hover {
+  z-index: 2;
+  color: var(--primary-dark);
+  text-decoration: none;
+  background-color: #e9ecef;
+  border-color: var(--border-color);
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.page-item.disabled .page-link {
+  color: #6c757d;
+  pointer-events: none;
+  cursor: auto;
+  background-color: #fff;
+  border-color: var(--border-color);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 0 10px;
+  }
+  
+  .card {
+    margin-bottom: 15px;
+  }
+  
+  .table th, 
+  .table td {
+    padding: 10px;
+  }
+}
+
+/* Custom Coffee Theme Elements */
+.coffee-bg {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.img-thumbnail {
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  padding: 3px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  padding: 8px 20px;
+  color: var(--text-dark);
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover, 
+.dropdown-item:focus {
+  background-color: rgba(90, 57, 33, 0.1);
+  color: var(--primary-color);
+}
+
+/* Modal Styles */
+.modal-content {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border-color);
+  padding: 15px 20px;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--border-color);
+  padding: 15px 20px;
+}
+
+/* Nav Tabs */
+.nav-tabs {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+  margin-bottom: -1px;
+  border: 1px solid transparent;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  color: var(--text-dark);
+  padding: 10px 20px;
+}
+
+.nav-tabs .nav-link:hover, 
+.nav-tabs .nav-link:focus {
+  border-color: #e9ecef #e9ecef var(--border-color);
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  color: var(--primary-color);
+  background-color: #fff;
+  border-color: var(--border-color) var(--border-color) #fff;
+  font-weight: 600;
+}
+
+.tab-content {
+  padding: 20px 0;
+}

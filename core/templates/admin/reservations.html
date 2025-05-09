@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin - Reservations Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'admin_dashboard' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="{% url 'admin_orders' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Orders
+                    </a>
+                    <a href="{% url 'admin_reservations' %}" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-calendar-alt me-2"></i> Reservations
+                    </a>
+                    <a href="{% url 'admin_items' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-coffee me-2"></i> Items
+                    </a>
+                    <a href="{% url 'admin_customers' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Customers
+                    </a>
+                    <a href="{% url 'admin_payments' %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-money-bill-wave me-2"></i> Payments
+                    </a>
+                    <a href="{% url 'home' %}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Exit Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Reservations Management</h6>
+                    <div>
+                        <form class="d-flex" method="get">
+                            <select name="type" class="form-select me-2">
+                                <option value="all" {% if reservation_type == 'all' %}selected{% endif %}>All Types</option>
+                                <option value="table" {% if reservation_type == 'table' %}selected{% endif %}>Table Reservations</option>
+                                <option value="item" {% if reservation_type == 'item' %}selected{% endif %}>Item Reservations</option>
+                            </select>
+                            <select name="status" class="form-select me-2">
+                                <option value="">All Statuses</option>
+                                <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if reservation_type == 'all' or reservation_type == 'table' %}
+                    <h5 class="mb-3">Table Reservations</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Table</th>
+                                    <th>Guests</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Special Requests</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in table_reservations %}
+                                <tr>
+                                    <td>{{ reservation.id }}</td>
+                                    <td>{{ reservation.customer.username }}</td>
+                                    <td>Table #{{ reservation.table.table_number }} (Capacity: {{ reservation.table.capacity }})</td>
+                                    <td>{{ reservation.number_of_guests }}</td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.reservation_time }}</td>
+                                    <td>{{ reservation.special_requests|default:"-"|truncatechars:20 }}</td>
+                                    <td>
+                                        {% if reservation.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif reservation.status == 'confirmed' %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                        {% elif reservation.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% elif reservation.status == 'completed' %}
+                                        <span class="badge bg-secondary">Completed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% if reservation.status == 'pending' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'confirmed' %}">Confirm Reservation</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'cancelled' %}">Cancel Reservation</a></li>
+                                                {% elif reservation.status == 'confirmed' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'completed' %}">Mark as Completed</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'cancelled' %}">Cancel Reservation</a></li>
+                                                {% elif reservation.status == 'cancelled' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'pending' %}">Mark as Pending</a></li>
+                                                {% elif reservation.status == 'completed' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_table_reservation_status' reservation.id 'confirmed' %}">Mark as Confirmed</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center">No table reservations found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    
+                    {% if reservation_type == 'all' or reservation_type == 'item' %}
+                    <h5 class="mb-3">Item Reservations</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer</th>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reservation in item_reservations %}
+                                <tr>
+                                    <td>{{ reservation.id }}</td>
+                                    <td>{{ reservation.customer.username }}</td>
+                                    <td>{{ reservation.item.name }}</td>
+                                    <td>{{ reservation.quantity }}</td>
+                                    <td>{{ reservation.reservation_date }}</td>
+                                    <td>{{ reservation.reservation_time }}</td>
+                                    <td>
+                                        {% if reservation.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif reservation.status == 'confirmed' %}
+                                        <span class="badge bg-success">Confirmed</span>
+                                        {% elif reservation.status == 'cancelled' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Actions
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% if reservation.status == 'pending' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_reservation_status' reservation.id 'confirmed' %}">Confirm Reservation</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_reservation_status' reservation.id 'cancelled' %}">Cancel Reservation</a></li>
+                                                {% elif reservation.status == 'confirmed' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_reservation_status' reservation.id 'cancelled' %}">Cancel Reservation</a></li>
+                                                {% elif reservation.status == 'cancelled' %}
+                                                <li><a class="dropdown-item" href="{% url 'admin_update_reservation_status' reservation.id 'pending' %}">Mark as Pending</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No item reservations found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Pagination -->
+                    {% if reservation_type == 'table' and table_reservations.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-4">
+                            {% if table_reservations.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?type={{ reservation_type }}&page={{ table_reservations.previous_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in table_reservations.paginator.page_range %}
+                                {% if table_reservations.number == i %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="?type={{ reservation_type }}&page={{ i }}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if table_reservations.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?type={{ reservation_type }}&page={{ table_reservations.next_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    {% if reservation_type == 'item' and item_reservations.has_other_pages %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-4">
+                            {% if item_reservations.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?type={{ reservation_type }}&page={{ item_reservations.previous_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in item_reservations.paginator.page_range %}
+                                {% if item_reservations.number == i %}
+                                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link" href="?type={{ reservation_type }}&page={{ i }}{% if status %}&status={{ status }}{% endif %}">{{ i }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if item_reservations.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?type={{ reservation_type }}&page={{ item_reservations.next_page_number }}{% if status %}&status={{ status }}{% endif %}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    {% if reservation_type == 'all' %}
+                    <!-- No pagination for 'all' view as we're showing both types with separate pagination -->
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i> Select either "Table Reservations" or "Item Reservations" from the filter for pagination.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,557 @@
+{% load static %}
+<style>
+  /* Reset some default styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fafafa;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Navbar styles */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    padding: 0 2rem;
+    height: 64px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .navbar .logo a {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #222;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .navbar .nav-links li {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar .nav-links a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+
+  .navbar .nav-links a:hover {
+    background-color: #f2f2f2;
+  }
+
+  /* Auth area */
+  .auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .error-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #dc3545;
+  }
+
+  .auth-buttons .btn,
+  .auth-buttons .logout-btn {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    border: 1px solid #222;
+    background: transparent;
+    color: #222;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .auth-buttons .btn:hover,
+  .auth-buttons .logout-btn:hover {
+    background-color: #f5f5f5;
+  }
+
+  .auth-buttons .register-btn {
+    background-color: #222;
+    color: #fff;
+    border: none;
+  }
+
+  .auth-buttons .register-btn:hover {
+    background-color: #444;
+  }
+
+  .auth-buttons .welcome {
+    font-weight: 500;
+    color: #333;
+    margin-right: 0.75rem;
+  }
+
+  /* Modals */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1rem;
+    box-sizing: border-box;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-content {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s ease;
+    animation: modalFadeIn 0.4s forwards;
+  }
+  
+  @keyframes modalFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .modal-header {
+    margin-bottom: 1.5rem;
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 1rem;
+  }
+  
+  .modal-title {
+    font-size: 1.8rem;
+    color: #6F4E37;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .modal-content .close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #777;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .modal-content .close:hover {
+    color: #6F4E37;
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .auth-form input,
+  .auth-form select,
+  .auth-form textarea {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    margin: 0.5rem 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    color: #333;
+    display: block;
+    box-sizing: border-box;
+  }
+  
+  .auth-form input:focus,
+  .auth-form select:focus,
+  .auth-form textarea:focus {
+    border-color: #6F4E37;
+    box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.15);
+    outline: none;
+    background-color: #fff;
+  }
+  
+  .auth-form input:hover,
+  .auth-form select:hover,
+  .auth-form textarea:hover {
+    border-color: #ccc;
+    background-color: #f5f5f5;
+  }
+  
+  .auth-form input::placeholder,
+  .auth-form select::placeholder,
+  .auth-form textarea::placeholder {
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+  
+  .auth-form label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+  
+  .auth-form .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px 0;
+    color: #dc3545;
+    font-size: 0.85rem;
+  }
+  
+  .auth-form .alert {
+    margin-bottom: 15px;
+    padding: 0.9rem 1.2rem;
+    border-radius: 8px;
+  }
+  
+  .auth-form .alert.error {
+    background-color: #ffe6e6;
+    border: 1px solid #f5b7b7;
+    color: #602a2a;
+  }
+  
+  .auth-form ul {
+    margin-bottom: 0;
+  }
+  
+  .auth-form .helptext {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+  
+  .form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+  }
+  
+  .text-muted {
+    color: #6c757d !important;
+  }
+  
+  .text-coffee {
+    color: #6F4E37 !important;
+  }
+  
+  .text-center {
+    text-align: center !important;
+  }
+  
+  .mt-3 {
+    margin-top: 1rem !important;
+  }
+  
+  .w-100 {
+    width: 100% !important;
+  }
+  
+  .btn-coffee {
+    background-color: #6F4E37;
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  .btn-coffee:hover {
+    background-color: #362417;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Flash Messages */
+  .messages {
+    max-width: 1100px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+  }
+
+  .alert {
+    padding: 0.9rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .alert.success {
+    background: #e6ffed;
+    border: 1px solid #b7f5c9;
+    color: #2a603b;
+  }
+
+  .alert.error {
+    background: #ffe6e6;
+    border: 1px solid #f5b7b7;
+    color: #602a2a;
+  }
+
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto;
+      padding: 1rem;
+    }
+    .nav-links {
+      flex-direction: column;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .auth-buttons {
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+  }
+</style>
+
+<nav class="navbar">
+  <div class="logo"><a href="{% url 'home' %}">SS Coffee</a></div>
+  <ul class="nav-links">
+    <li><a href="{% url 'home' %}">Home</a></li>
+    <li><a href="{% url 'items' %}">Items</a></li>
+    <li><a href="{% url 'orders' %}">Orders</a></li>
+    <li><a href="{% url 'reservations' %}">Reservations</a></li>
+  </ul>
+  <div class="auth-buttons">
+    {% if request.user.is_authenticated %}
+      <span class="welcome">Hi, {{ request.user.username }}</span>
+      {% if request.user.is_staff or request.user.is_superuser %}
+        <a href="{% url 'admin_dashboard' %}" class="btn" style="background-color: #4CAF50; color: white; border: none;">Admin Dashboard</a>
+      {% endif %}
+      <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    {% else %}
+      <button type="button" class="btn login-btn">Login</button>
+      <button type="button" class="btn register-btn">Register</button>
+    {% endif %}
+  </div>
+</nav>
+
+{% if not request.user.is_authenticated %}
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Welcome Back</h2>
+        <span class="close" onclick="document.getElementById('loginModal').style.display='none'">&times;</span>
+      </div>
+      <form method="post" action="{% url 'login' %}" class="auth-form">
+        {% csrf_token %}
+        {% if login_error %}
+          <div class="alert error">
+            {{ login_error }}
+          </div>
+        {% endif %}
+        <div class="form-group">
+          <label for="id_username">Username</label>
+          <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="id_password">Password</label>
+          <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
+          <div class="d-flex justify-content-between mt-1">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="rememberMe">
+              <label class="form-check-label text-muted" for="rememberMe" style="font-size: 0.9rem;">Remember me</label>
+            </div>
+            <a href="#" class="text-coffee" style="font-size: 0.9rem;">Forgot password?</a>
+          </div>
+        </div>
+        <button type="submit" class="btn-coffee w-100">Sign In</button>
+        <div class="text-center mt-3">
+          <p class="text-muted">Don't have an account? <a href="javascript:void(0)" onclick="openRegisterModal()" class="text-coffee">Register here</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Create Account</h2>
+        <span class="close" onclick="document.getElementById('registerModal').style.display='none'">&times;</span>
+      </div>
+      <form method="post" action="{% url 'register' %}" class="auth-form">
+        {% csrf_token %}
+        {% if register_form.errors %}
+          <div class="alert error">
+            <ul class="error-list">
+              {% for field in register_form %}
+                {% for error in field.errors %}
+                  <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+              {% for error in register_form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        <div class="form-group">
+          <label for="id_username_reg">Username</label>
+          <input type="text" name="username" id="id_username_reg" class="form-control" placeholder="Choose a username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="id_email">Email</label>
+          <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email address" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label for="id_password1">Password</label>
+          <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Create a strong password" autocomplete="new-password" required>
+          <small class="form-text text-muted">Your password must contain at least 8 characters and can't be entirely numeric.</small>
+        </div>
+        <div class="form-group">
+          <label for="id_password2">Confirm Password</label>
+          <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="btn-coffee w-100">Create Account</button>
+        <div class="text-center mt-3">
+          <p class="text-muted">Already have an account? <a href="javascript:void(0)" onclick="openLoginModal()" class="text-coffee">Sign in here</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endif %}
+
+{% if messages %}
+  <div class="messages">
+    {% for msg in messages %}
+      <div class="alert {{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<script>
+  // Functions to open modals from links
+  function openLoginModal() {
+    const loginModal = document.getElementById('loginModal');
+    if (loginModal) {
+      loginModal.style.display = 'flex';
+      document.getElementById('registerModal').style.display = 'none';
+    }
+  }
+  
+  function openRegisterModal() {
+    const registerModal = document.getElementById('registerModal');
+    if (registerModal) {
+      registerModal.style.display = 'flex';
+      document.getElementById('loginModal').style.display = 'none';
+    }
+  }
+
+  // Set variables based on Django template conditions
+  var showLogin = false;
+  var showLoginModal = false;
+  var showRegisterModal = false;
+  
+  // Process Django template variables
+  {% for msg in messages %}
+    {% if 'success' in msg.tags %}
+      showLogin = true;
+    {% endif %}
+  {% endfor %}
+  
+  {% if show_login_modal %}
+    showLoginModal = true;
+  {% endif %}
+  
+  {% if show_register_modal %}
+    showRegisterModal = true;
+  {% endif %}
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the modals
+    const loginModal = document.getElementById('loginModal');
+    const registerModal = document.getElementById('registerModal');
+    
+    // Get the buttons that open the modals
+    const loginBtn = document.querySelector('.login-btn');
+    const registerBtn = document.querySelector('.register-btn');
+    
+    // When the user clicks on the button, open the modal
+    if (loginBtn) {
+      loginBtn.onclick = function() {
+        loginModal.style.display = 'flex';
+      };
+    }
+    
+    if (registerBtn) {
+      registerBtn.onclick = function() {
+        registerModal.style.display = 'flex';
+      };
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target === loginModal) loginModal.style.display = 'none';
+      if (event.target === registerModal) registerModal.style.display = 'none';
+    };
+
+    // Auto-open Login after successful registration
+    if (showLogin && loginModal) {
+      loginModal.style.display = 'flex';
+    }
+    
+    // Show modals if there are form errors
+    if (showLoginModal && loginModal) {
+      loginModal.style.display = 'flex';
+    }
+    
+    if (showRegisterModal && registerModal) {
+      registerModal.style.display = 'flex';
+    }
+  });
+</script>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reservations - SS Coffee</title>
+  {% load static %}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      padding-top: 80px; /* leave space for fixed navbar */
+    }
+
+    /* Navbar fix */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #007b5e;
+      color: #fff;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .no-data {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #999;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed navbar include -->
+  <nav>
+    {% include 'navbar.html' %}
+  </nav>
+
+  <main>
+    <h1>Your Reservations</h1>
+    
+    <div style="margin-bottom: 20px; text-align: right;">
+      <a href="{% url 'table_reservation_form' %}" class="btn btn-primary" style="display: inline-block; padding: 10px 15px; background-color: #007b5e; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+        Reserve a Table
+      </a>
+    </div>
+
+    <h2 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem;">Table Reservations</h2>
+    {% if table_reservations %}
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Table</th>
+            <th>Guests</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reservation in table_reservations %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>Table #{{ reservation.table.table_number }}</td>
+              <td>{{ reservation.number_of_guests }}</td>
+              <td>{{ reservation.reservation_date }}</td>
+              <td>{{ reservation.reservation_time }}</td>
+              <td>
+                <span style="padding: 3px 8px; border-radius: 3px; font-size: 0.8rem; font-weight: bold;
+                  {% if reservation.status == 'confirmed' %}
+                    background-color: #28a745; color: white;
+                  {% elif reservation.status == 'pending' %}
+                    background-color: #ffc107; color: #212529;
+                  {% elif reservation.status == 'cancelled' %}
+                    background-color: #dc3545; color: white;
+                  {% elif reservation.status == 'completed' %}
+                    background-color: #6c757d; color: white;
+                  {% endif %}
+                ">
+                  {{ reservation.get_status_display }}
+                </span>
+              </td>
+              <td>
+                {% if reservation.status == 'pending' or reservation.status == 'confirmed' %}
+                  <a href="{% url 'cancel_table_reservation' reservation.id %}" 
+                     style="color: #dc3545; text-decoration: none;"
+                     onclick="return confirm('Are you sure you want to cancel this reservation?')">
+                    Cancel
+                  </a>
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="no-data">You have no table reservations yet.</p>
+    {% endif %}
+
+    <h2 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.5rem;">Item Reservations</h2>
+    {% if reservations %}
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reservation in reservations %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ reservation.item.name }}</td>
+              <td>{{ reservation.quantity }}</td>
+              <td>{{ reservation.reservation_date }}</td>
+              <td>{{ reservation.reservation_time }}</td>
+              <td>
+                <span style="padding: 3px 8px; border-radius: 3px; font-size: 0.8rem; font-weight: bold;
+                  {% if reservation.status == 'confirmed' %}
+                    background-color: #28a745; color: white;
+                  {% elif reservation.status == 'pending' %}
+                    background-color: #ffc107; color: #212529;
+                  {% elif reservation.status == 'cancelled' %}
+                    background-color: #dc3545; color: white;
+                  {% endif %}
+                ">
+                  {{ reservation.get_status_display }}
+                </span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="no-data">You have no item reservations yet.</p>
+    {% endif %}
+  </main>
+</body>
+</html>
