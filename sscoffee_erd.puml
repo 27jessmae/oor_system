@@ -1,0 +1,122 @@
+@startuml SSCoffee System ERD
+
+' Define entities
+entity "CustomUser" as user {
+  * id : BigAutoField <<PK>>
+  --
+  password : CharField
+  last_login : DateTimeField
+  is_superuser : BooleanField
+  username : CharField
+  first_name : CharField
+  last_name : CharField
+  email : CharField
+  is_staff : BooleanField
+  is_active : BooleanField
+  date_joined : DateTimeField
+}
+
+entity "AdminProfile" as admin {
+  * id : BigAutoField <<PK>>
+  --
+  * user_id : BigAutoField <<FK>>
+}
+
+entity "Customer" as customer {
+  * id : BigAutoField <<PK>>
+  --
+  * user_id : BigAutoField <<FK>>
+}
+
+entity "Category" as category {
+  * id : BigAutoField <<PK>>
+  --
+  name : CharField
+}
+
+entity "Item" as item {
+  * id : BigAutoField <<PK>>
+  --
+  name : CharField
+  description : TextField
+  price : DecimalField
+  image : FileField
+  category : CharField
+}
+
+entity "Order" as order {
+  * id : BigAutoField <<PK>>
+  --
+  * item_id : BigAutoField <<FK>>
+  * customer_id : BigAutoField <<FK>>
+  quantity : PositiveIntegerField
+  order_date : DateField
+  order_time : TimeField
+  status : CharField
+}
+
+entity "OrderItem" as orderitem {
+  * id : BigAutoField <<PK>>
+  --
+  * order_id : BigAutoField <<FK>>
+  * item_id : BigAutoField <<FK>>
+  quantity : PositiveIntegerField
+}
+
+entity "Reservation" as reservation {
+  * id : BigAutoField <<PK>>
+  --
+  * customer_id : BigAutoField <<FK>>
+  * item_id : BigAutoField <<FK>>
+  quantity : PositiveIntegerField
+  reservation_date : DateField
+  reservation_time : TimeField
+  status : CharField
+}
+
+entity "Payment" as payment {
+  * id : BigAutoField <<PK>>
+  --
+  * order_id : BigAutoField <<FK>>
+  amount : DecimalField
+  payment_date : DateField
+}
+
+entity "Table" as table {
+  * id : BigAutoField <<PK>>
+  --
+  table_number : PositiveIntegerField
+  capacity : PositiveIntegerField
+  is_available : BooleanField
+}
+
+entity "TableReservation" as tablereservation {
+  * id : BigAutoField <<PK>>
+  --
+  * customer_id : BigAutoField <<FK>>
+  * table_id : BigAutoField <<FK>>
+  number_of_guests : PositiveIntegerField
+  reservation_date : DateField
+  reservation_time : TimeField
+  special_requests : TextField
+  status : CharField
+  created_at : DateTimeField
+}
+
+' Define relationships
+user ||--o{ admin : "has"
+user ||--o{ customer : "has"
+user ||--o{ order : "places"
+user ||--o{ reservation : "makes"
+user ||--o{ tablereservation : "books"
+
+item ||--o{ order : "included in"
+item ||--o{ orderitem : "part of"
+item ||--o{ reservation : "reserved"
+
+order ||--o{ orderitem : "contains"
+order ||--o{ payment : "paid through"
+
+table ||--o{ tablereservation : "reserved for"
+
+@enduml

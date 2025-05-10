@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSCoffee System ERD</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .entity {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 280px;
+            margin-bottom: 20px;
+        }
+        .entity-header {
+            background-color: #4b6584;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            font-weight: bold;
+        }
+        .entity-body {
+            padding: 10px;
+        }
+        .field {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .primary-key {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .foreign-key {
+            color: #8e44ad;
+            font-style: italic;
+        }
+        .relationships {
+            margin-top: 40px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .relationship {
+            margin: 10px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .pk-color {
+            background-color: #2980b9;
+        }
+        .fk-color {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <h1>SSCoffee System ERD</h1>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <span class="legend-color pk-color"></span>
+            <span>Primary Key</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-color fk-color"></span>
+            <span>Foreign Key</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- CustomUser -->
+        <div class="entity">
+            <div class="entity-header">CustomUser</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field">password: CharField</div>
+                <div class="field">last_login: DateTimeField</div>
+                <div class="field">is_superuser: BooleanField</div>
+                <div class="field">username: CharField</div>
+                <div class="field">first_name: CharField</div>
+                <div class="field">last_name: CharField</div>
+                <div class="field">email: CharField</div>
+                <div class="field">is_staff: BooleanField</div>
+                <div class="field">is_active: BooleanField</div>
+                <div class="field">date_joined: DateTimeField</div>
+            </div>
+        </div>
+        
+        <!-- AdminProfile -->
+        <div class="entity">
+            <div class="entity-header">AdminProfile</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">user: OneToOneField (FK to CustomUser)</div>
+            </div>
+        </div>
+        
+        <!-- Customer -->
+        <div class="entity">
+            <div class="entity-header">Customer</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">user: OneToOneField (FK to CustomUser)</div>
+            </div>
+        </div>
+        
+        <!-- Category -->
+        <div class="entity">
+            <div class="entity-header">Category</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field">name: CharField</div>
+            </div>
+        </div>
+        
+        <!-- Item -->
+        <div class="entity">
+            <div class="entity-header">Item</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field">name: CharField</div>
+                <div class="field">description: TextField</div>
+                <div class="field">price: DecimalField</div>
+                <div class="field">image: FileField</div>
+                <div class="field">category: CharField</div>
+            </div>
+        </div>
+        
+        <!-- Order -->
+        <div class="entity">
+            <div class="entity-header">Order</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">item: ForeignKey (FK to Item)</div>
+                <div class="field foreign-key">customer: ForeignKey (FK to CustomUser)</div>
+                <div class="field">quantity: PositiveIntegerField</div>
+                <div class="field">order_date: DateField</div>
+                <div class="field">order_time: TimeField</div>
+                <div class="field">status: CharField</div>
+            </div>
+        </div>
+        
+        <!-- OrderItem -->
+        <div class="entity">
+            <div class="entity-header">OrderItem</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">order: ForeignKey (FK to Order)</div>
+                <div class="field foreign-key">item: ForeignKey (FK to Item)</div>
+                <div class="field">quantity: PositiveIntegerField</div>
+            </div>
+        </div>
+        
+        <!-- Reservation -->
+        <div class="entity">
+            <div class="entity-header">Reservation</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">customer: ForeignKey (FK to CustomUser)</div>
+                <div class="field foreign-key">item: ForeignKey (FK to Item)</div>
+                <div class="field">quantity: PositiveIntegerField</div>
+                <div class="field">reservation_date: DateField</div>
+                <div class="field">reservation_time: TimeField</div>
+                <div class="field">status: CharField</div>
+            </div>
+        </div>
+        
+        <!-- Payment -->
+        <div class="entity">
+            <div class="entity-header">Payment</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">order: ForeignKey (FK to Order)</div>
+                <div class="field">amount: DecimalField</div>
+                <div class="field">payment_date: DateField</div>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div class="entity">
+            <div class="entity-header">Table</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field">table_number: PositiveIntegerField</div>
+                <div class="field">capacity: PositiveIntegerField</div>
+                <div class="field">is_available: BooleanField</div>
+            </div>
+        </div>
+        
+        <!-- TableReservation -->
+        <div class="entity">
+            <div class="entity-header">TableReservation</div>
+            <div class="entity-body">
+                <div class="field primary-key">id: BigAutoField (PK)</div>
+                <div class="field foreign-key">customer: ForeignKey (FK to CustomUser)</div>
+                <div class="field foreign-key">table: ForeignKey (FK to Table)</div>
+                <div class="field">number_of_guests: PositiveIntegerField</div>
+                <div class="field">reservation_date: DateField</div>
+                <div class="field">reservation_time: TimeField</div>
+                <div class="field">special_requests: TextField</div>
+                <div class="field">status: CharField</div>
+                <div class="field">created_at: DateTimeField</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="relationships">
+        <h2>Relationships</h2>
+        <div class="relationship">CustomUser ←→ AdminProfile (One-to-One)</div>
+        <div class="relationship">CustomUser ←→ Customer (One-to-One)</div>
+        <div class="relationship">CustomUser ←→ Order (One-to-Many)</div>
+        <div class="relationship">CustomUser ←→ Reservation (One-to-Many)</div>
+        <div class="relationship">CustomUser ←→ TableReservation (One-to-Many)</div>
+        <div class="relationship">Item ←→ Order (One-to-Many)</div>
+        <div class="relationship">Item ←→ OrderItem (One-to-Many)</div>
+        <div class="relationship">Item ←→ Reservation (One-to-Many)</div>
+        <div class="relationship">Order ←→ OrderItem (One-to-Many)</div>
+        <div class="relationship">Order ←→ Payment (One-to-Many)</div>
+        <div class="relationship">Table ←→ TableReservation (One-to-Many)</div>
+    </div>
+</body>
+</html>
